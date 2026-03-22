@@ -7,18 +7,26 @@ public class PlayerController : MonoBehaviour
     public float speed = 10f;
     public TextMeshProUGUI scoreText;
     public GameObject winTextObject;
-    public GameObject gameOverPanel; // ลากหน้า GameOver มาใส่ที่นี่
+    public GameObject gameOverPanel; 
+    public GameObject playAgainButton;
 
     private Rigidbody rb;
     private int count;
-    public int totalItems = 10; // ตั้งจำนวนเหรียญที่ต้องเก็บให้ครบ
+    public int totalItems = 10; 
 
     void Start() {
         rb = GetComponent<Rigidbody>();
         count = 0;
         SetScoreText();
-        winTextObject.SetActive(false);
-        gameOverPanel.SetActive(false);
+
+        // ใส่ if เช็คก่อนว่ามีของไหม ถ้ามีค่อยสั่งปิด
+        if (winTextObject != null) {
+            winTextObject.SetActive(false);
+        }
+        
+        if (gameOverPanel != null) {
+            gameOverPanel.SetActive(false);
+        }
     }
 
     void Update() {
@@ -42,8 +50,7 @@ public class PlayerController : MonoBehaviour
         // 2. ตกเหว หรือ ชนโซนอันตราย (Hazard)
         if (other.gameObject.CompareTag("Hazard")) 
         {
-            // ถ้าชน Hazard ให้เริ่มด่านนั้นใหม่ทันที (หรือจะสั่ง GameOver(); ก็ได้ครับ)
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            GameOver(); // เรียกใช้ฟังก์ชันเดิมที่เราทำจอดำไว้ จะได้ดูเป็นระบบเดียวกันครับ
         }
         
     }
@@ -67,7 +74,11 @@ public class PlayerController : MonoBehaviour
     }
 
     void Win() {
-        winTextObject.SetActive(true);
+        // เช็คก่อนว่าลาก WinText มาใส่หรือยัง
+        if (winTextObject != null) {
+            winTextObject.SetActive(true);
+        }
+
         // เช็คว่าถ้าตอนนี้อยู่ด่านแรก ให้วาร์ปไปด่าน Final หลังจากชนะ 2 วินาที
         if (SceneManager.GetActiveScene().name != "FinalScene") {
             Invoke("LoadFinalScene", 2f);
@@ -87,5 +98,10 @@ public class PlayerController : MonoBehaviour
     // ฟังก์ชันสำหรับกดปุ่ม Restart (เอาไปเชื่อมกับปุ่มใน UI)
     public void RestartGame() {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+    // ฟังก์ชันสำหรับกดปุ่มย้อนกลับไปด่านแรก
+    public void GoToFirstScene() {
+        // ใส่ชื่อ Scene แรกของคุณลงไป (เช่น "SampleScene")
+        SceneManager.LoadScene("SampleScene"); 
     }
 }
